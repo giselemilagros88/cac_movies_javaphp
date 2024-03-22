@@ -69,6 +69,9 @@ const fetchMoviesGrid = async (page = 1) => {
         peliculaWrapper.appendChild(anchor); // Agregamos el enlace con la película al contenedor adicional
         tendenciasContainer.appendChild(peliculaWrapper); // Agregamos el contenedor adicional al contenedor de tendencias
     });
+
+    // Actualizamos el atributo data-page con el número de página actual
+    tendenciasContainer.parentElement.setAttribute('data-page', page);
 };
 
 // Función para cargar películas en el carrusel de películas aclamadas
@@ -101,6 +104,24 @@ const fetchMoviesFlex = async () => {
     });
 };
 
+// Event listener para el botón "Anterior"
+document.querySelector('.anterior').addEventListener('click', () => {
+    // Obtener el número de página actual
+    let currentPage = Number(document.querySelector('.peliculasTendencia').getAttribute('data-page'));
+    // Si es la primera página, no hacemos nada
+    if (currentPage <= 1) return;
+    // Cargar las películas de la página anterior
+    fetchMoviesGrid(currentPage - 1);
+});
+
+// Event listener para el botón "Siguiente"
+document.querySelector('.siguiente').addEventListener('click', () => {
+    // Obtener el número de página actual
+    let currentPage = Number(document.querySelector('.peliculasTendencia').getAttribute('data-page'));
+    // Cargar las películas de la página siguiente
+    fetchMoviesGrid(currentPage + 1);
+});
+
 // Ejecutamos las funciones de carga de películas al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
     // Cargamos las películas en la cuadrícula de tendencias
@@ -108,5 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cargamos las películas en el carrusel de películas aclamadas
     fetchMoviesFlex();
 });
+
+
 
 
