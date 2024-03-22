@@ -174,7 +174,7 @@ body{
     }
     .buscadorPrincipal{
         background-color: #181419;
-        color:white;
+        color:rgb(255, 255, 255);
         height: 50vh;
         display: flex;
         flex-direction: column;
@@ -194,7 +194,7 @@ body{
             .inputBuscador{
                 border: 2px solid white;
                 border-radius: 25px;
-                color: #ffffff;
+                color: #000000;
                 font-size: 1.2rem;
                 height: 50px;
                 margin: 20px 0px;
@@ -574,7 +574,7 @@ body{
                     border: 2px solid #9f3647;
                     background-color: #333333;
                     outline: none;
-                    color:white;
+                    color:rgb(255, 255, 255);
                 }
                 .error input:not(.check,.boton),.error select{
                     border: 1px solid #ff0000;
