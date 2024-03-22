@@ -566,7 +566,7 @@ body{
                 padding:40px;
                 input:not(.check,.boton),select{
                     width: 100%;
-                    margin-bottom: 20px;
+                    margin-bottom: 10px;
                     height: 40px;
                     padding: 0px 20px;
                     font-size: 1.2rem;
@@ -576,6 +576,16 @@ body{
                     outline: none;
                     color:white;
                 }
+                .error input:not(.check,.boton),.error select{
+                    border: 1px solid #ff0000;
+                }
+                .error-text{
+                    color: #ff0000;
+                    font-size: 0.8rem;
+                    margin-top:0px;
+                    margin-bottom: 10px;
+                }
+              
                 .terminos{
                     font-size: 0.8rem;
                     display: flex;
@@ -611,6 +621,8 @@ body{
    
     }
 }
+
+
 
 /*media querys para mobile PAGINA registrarse*/
 @media (max-width: 1200px) {
