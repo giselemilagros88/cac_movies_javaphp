@@ -1,5 +1,5 @@
 // Definimos la URL base de la API de The Movie DB
-const API_SERVER = 'https://api.themoviedb.org/3';
+const API_SERVER = 'https://api.themoviedb.org/3'; //esto se cambiara por una api propia que tenga las peliculas en la base de mysql
 
 // Opciones para las peticiones fetch a la API
 const options = {
