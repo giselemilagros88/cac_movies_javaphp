@@ -34,7 +34,7 @@
             <h2 class="tituloSection">¿Qué estas buscando para ver?</h2>
             <form class="buscadorPeliculas">
                 <input class="inputBuscador" type="text" placeholder="Buscar..." id="buscar" name="buscar">
-                <input class="botonBuscador" type="submit" value="Buscar">
+                <input id="botonBuscador" class="botonBuscador" type="submit" value="Buscar">
             </form>
         </section>
         <hr>
@@ -60,7 +60,7 @@
                 <li class="listaItem"><a class="linkNav" href="">Términos y condiciones</a></li>
                 <li class="listaItem"><a class="linkNav" href="">Preguntas frecuentes</a></li>
                 <li class="listaItem"><a class="linkNav" href="">Ayuda</a></li>
-                <li class="listaItem"><a class="linkNav administradorPeliculas" href="./pages/administrador.html">Administrador Peliculas</a></li>
+                <li class="listaItem"><a id="administrador" class="linkNav administradorPeliculas" href="./pages/administrador.html">Administrador Peliculas</a></li>
             </ul>
         </nav>
         <a href="#main" class="flechaArriba">
@@ -71,7 +71,45 @@
     <script>
         AOS.init();
     </script>
-    <script src="./js/fetch_peliculas.js"></script>
+   <!-- <script src="./js/fetch_peliculas.js"></script>-->
+    <script src="./js/fetch_peliculas_php.js"></script>
+    <script>
+        // si en el localstore tiene guardado es_admin = 'S' entonces se muestra el link de administrador
+        if (localStorage.getItem('es_admin') === 'S') {
+            document.getElementById('administrador').style.display = 'block';
+        }else{
+            document.getElementById('administrador').style.display = 'none';
+        }
+        // en el envento submit del formulario de busqueda se ejecuta la funcion buscarPelicula
+        document.querySelector('.buscadorPeliculas').addEventListener('submit', buscarPelicula);
+        // buscarPelicula: me dirige a la pagina detalle.html con el parametro de la pelicula a buscar
+        function buscarPelicula(e) {
+            e.preventDefault();
+            const buscar = document.getElementById('buscar').value;
+            window.location.href = `./pages/detalle.html?buscar=${buscar}`;
+        }
+        pelicula = document.getElementById('pelicula');
+       // Agrega un evento de clic al contenedor de películas
+        tendenciasContainer.addEventListener('click', (event) => {
+            console.log("click");
+            console.log(event.target);
+            // Verifica si el elemento clickeado es un div de película
+            if (event.target.classList.contains('tituloPelicula')) {
+                console.log("si")
+                // Obtén la película seleccionada
+                const pelicula = event.target;
+                // Obtén el título de la película
+                const titulo = pelicula.querySelector('h4').textContent;
+                console.log(titulo);
+                // Codifica el nombre de la película para asegurar que no haya caracteres especiales
+                const nombrePelicula = encodeURIComponent(titulo);
+                // Redirige a la página detalle.html con el parámetro "buscar"
+                window.location.href = `./pages/detalle.html?buscar=${nombrePelicula}`;
+            }
+        });
+            
+
+    </script>
 </body>
 </html>
 

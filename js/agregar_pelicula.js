@@ -1,5 +1,5 @@
 // Espera a que el DOM se cargue completamente
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Selecciona el formulario en el DOM
     const form = document.querySelector('form');
 
@@ -12,22 +12,47 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('El formulario no es válido. Por favor, corrige los errores.');
             return;
         }
-        // le pego al servidor para obtener el token si el usuario es el admin:
+        // si en el localstorage es admin
+        if (localStorage.getItem('es_admin')=='N'){
+            console.log('No es admin');
+            return;
+        }
+        // le pego al servidor para grabar la pelicula:
         const formData = new FormData(form);
-        const userData = {
-            usuario: formData.get('usuario'),
-            password: formData.get('password')
+        // armo el json para enviar al servidor
+        /*{
+                "id_pelicula": null,
+                "titulo": "Mision Imposible",
+                "fecha_lanzamiento": "1996-07-04",
+                "genero": "Acción/Suspenso",
+                "duracion": "1h 50m",
+                "director": "Brian De Palma",
+                "reparto": "Tom Cruise, Jean Reno",
+                "sinopsis": "El espía Ethan Hunt debe llevar a cabo una misión imposible: evitar la venta de un disco robado que contiene información confidencial y, al mismo tiempo, limpiar su nombre tras haber sido acusado del asesinato de su mentor.",
+                "imagen": "mision_imposible_1.jpg"
+                } */
+        const peliculaData = {
+            id_pelicula : null,
+            titulo: formData.get('titulo'),
+            fecha_lanzamiento: transformaFecha(formData.get('fecha')),
+            genero: formData.get('genero'),
+            duracion: formData.get('duracion'),
+            director: formData.get('director'),
+            reparto: formData.get('reparto'),
+            sinopsis: formData.get('sinopsis'),
+            imagen: document.getElementById("imagen").files[0].name,
+            token: localStorage.getItem('token')
         };
 
         try {
             const errorMessage = document.getElementById('error-text-login');
             errorMessage.innerText = '';
-            const response = await fetch('http://localhost/moviesphp/auth.php', {
+            const response = await fetch('http://localhost/moviesphp/peliculas.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(userData)
+                body: JSON.stringify(peliculaData)
             });
 
             const data = await response.json();
@@ -36,23 +61,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 console.log('Respuesta del servidor:', data);
                 if (data.status=='ok'){ // si la respuesta del ok es OK
-                    const token = data.result.token;
-                    const es_admin = data.result.es_admin;
-                    console.log('Token de autenticación:', token);
-                    // Aquí puedes guardar el token en localStorage o sessionStorage para usarlo en otras solicitudes
-                    localStorage.setItem('token', token);
-                    localStorage.setItem('es_admin', es_admin);
-                    // Redireccionar al índice del front
-                    window.location.href = '../index.html';
+                    console.log('Pelicula grabada correctamente');
+                   // limpiar los campos del formulario
+                    form.reset();
                 }else if (data.status=='error'){ // si da error 
                     console.log('Error:', data.result.error_msg);
-                    localStorage.setItem('es_admin', 'N');
                     errorMessage.innerText = data.result.error_msg;
                 }
                 
             } else {
                 console.log('Error:', data.error);
-                localStorage.setItem('es_admin', 'N');
                 errorMessage.innerText = 'Error al enviar la solicitud:';
             }
         } catch (error) {
@@ -61,17 +79,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
     });
 
-    // Función para validar todo el formulario
     const validateForm = () => {
         let isValid = true;
-
-        // Validar campo de email
-        isValid = validateEmailField('usuario', 'El correo electrónico no es válido') && isValid;
-
-        // Validar campo de contraseña
-        isValid = validateField('password', 'La contraseña es obligatoria') && isValid;
-
+    
+        // Validar campo de título
+        isValid = validateField('titulo', 'El título es obligatorio') && isValid;
+    
+        // Validar campo de fecha de lanzamiento
+        isValid = validateField('fecha', 'La fecha de lanzamiento es obligatoria') && isValid;
+    
+        // Validar campo de género
+        isValid = validateField('genero', 'El género es obligatorio') && isValid;
+    
+        // Validar campo de duración
+        isValid = validateField('duracion', 'La duración es obligatoria') && isValid;
+    
+        // Validar campo de director
+        isValid = validateField('director', 'El director es obligatorio') && isValid;
+    
+        // Validar campo de reparto
+        isValid = validateField('reparto', 'El reparto es obligatorio') && isValid;
+    
+        // Validar campo de sinopsis
+        isValid = validateField('sinopsis', 'La sinopsis es obligatoria') && isValid;
+    
+        // Validar campo de imagen
+        isValid = validateFileField('imagen', 'La imagen es obligatoria') && isValid;
+    
         return isValid;
+    };
+    
+    const validateFileField = (fieldId, errorMessage) => {
+        const field = document.getElementById(fieldId);
+        const file = field.files[0]; // Obtenemos el archivo seleccionado
+        // levanto el nombre de la imagen 
+        const nombreImagen = file.name;
+        console.log(nombreImagen);
+        if (!file) {
+            setErrorFor(field, errorMessage);
+            return false;
+        } else {
+            setSuccessFor(field);
+            return true;
+        }
     };
 
     // Función para validar un campo específico
@@ -93,33 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return true;
         }
     };
+     // funcion flecha que toma la fecha y la transforma asi : yyyy-mm-dd
+    const transformaFecha = (fecha) => {
+        const fechaArray = fecha.split('/');
+        return `${fechaArray[2]}-${fechaArray[1]}-${fechaArray[0]}`;
 
-    // Función para validar el campo de correo electrónico
-    const validateEmailField = (fieldId, errorMessage) => {
-        // Obtiene el elemento del campo de correo electrónico mediante su ID
-        const field = document.getElementById(fieldId);
-        // Obtiene el valor del campo y elimina los espacios en blanco al principio y al final
-        const email = field.value.trim();
-        // Si el campo de correo electrónico está vacío
-        if (email === '') {
-            // Establece un mensaje de error para el campo de correo electrónico
-            setErrorFor(field, 'El correo electrónico es obligatorio');
-            // Devuelve false indicando que la validación ha fallado
-            return false;
-        // Si el campo de correo electrónico no está vacío pero no es válido
-        } else if (!isEmail(email)) {
-            // Establece un mensaje de error para el campo de correo electrónico
-            setErrorFor(field, errorMessage);
-            // Devuelve false indicando que la validación ha fallado
-            return false;
-        } else {
-            // Si el campo de correo electrónico es válido, elimina cualquier mensaje de error anterior
-            setSuccessFor(field);
-            // Devuelve true indicando que la validación ha tenido éxito
-            return true;
-        }
     };
-
+  
     // Función para establecer un mensaje de error en un campo
     const setErrorFor = (input, message) => {
         // Encuentra el elemento padre del campo de entrada
@@ -146,13 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
         errorText.innerText = '';
     };
 
-    // Función para validar si una cadena es una dirección de correo electrónico válida
-    const isEmail = (email) => {
-        // Expresión regular para validar el formato de correo electrónico
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        // Verifica si el correo electrónico cumple con el formato
-        return re.test(email);
-    };
      // Agrega eventos para borrar las clases de error cuando se completa el input o se presiona Tab
      form.querySelectorAll('input').forEach(input => {
         input.addEventListener('input', () => {
@@ -176,7 +199,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-   
+    // llenar en la tabla los datos de todas las peliculas
+    const tabla = document.getElementById('tablaPeliculas');
+    // le pego al server para obtener todas las peliculas
+    const response = await fetch('http://localhost/moviesphp/peliculas.php', {
+        method: 'GET',
+        headers: {
+            accept: 'application/json'
+        }
+    });
+    const data = await response.json();
+    const peliculas = data;
+    // limpio la tabla
+    tabla.innerHTML = '';
+    // recorro el array de peliculas y las muestro en la tabla y el ultimo campo tiene que tener dos botones de acciones,
+    //<td><button class="btn btn-warning">Modificar</button><button class="btn btn-danger">Eliminar</button></td>
+    peliculas.forEach(pelicula => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${pelicula.id_pelicula}</td>
+            <td>${pelicula.titulo}</td>
+            <td>${pelicula.genero}</td>
+            <td><img src="../assets/img/${pelicula.imagen}" alt="${pelicula.titulo}" width="150"></td>
+            <td><button class="btn btn-warning">Modificar</button><button class="btn btn-danger">Eliminar</button></td>
+         `;
+        tabla.appendChild(row);
+    });
 });
 
 

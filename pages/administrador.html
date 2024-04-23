@@ -36,37 +36,47 @@
                 <div class="col-12 col-md-4">
                     <label for="titulo">Titulo</label>
                     <input class="form-control" type="text" name="titulo" id="titulo">
+                    <div class="error-text"></div>
                 </div>
                 <div class="col-4 col-md-3">
                     <label for="fecha">Fecha lanzamiento</label>
                     <input class="form-control" type="date" name="fecha" id="fecha">
+                    <div class="error-text"></div>
                 </div>
                 <div class="col-6 col-md-3">
                     <label for="genero">Genero</label>
                     <input class="form-control" type="text" name="genero" id="genero">
+                    <div class="error-text"></div>
                 </div>
                 <div class="col-2 col-md-2">
                     <label for="duracion">Duración</label>
                     <input class="form-control" type="text" name="duracion" id="duracion">
+                    <div class="error-text"></div>
                 </div>
                 <div class="col-6 col-md-4">
                     <label for="director">Director</label>
                     <input class="form-control" type="text" name="director" id="director">
+                    <div class="error-text"></div>
                 </div>
                 <div class="col-12 col-md-8">
                     <label for="reparto">Reparto</label>
                     <input class="form-control" type="text" name="reparto" id="reparto">
+                    <div class="error-text"></div>
                 </div>
                 <div class="col-12">
                     <label for="sinopsis">Sinopsis</label>
                     <textarea class="form-control" name="sinopsis" id="sinopsis" cols="30" rows="3"></textarea>
+                    <div class="error-text"></div>
                 </div>
                 <div class="col-12 col-md-6">
                     <label for="imagen">Imagen</label>
                     <input class="form-control" type="file" name="imagen" id="imagen">
+                    <div class="error-text"></div>
                 </div>
                 <div class="col-12">
-                    <input class="align-self-center btn btn-success" type="submit" value="Agregar Pelicula">
+                    <input id="agregarPelicula" class="align-self-center btn btn-success" type="submit" value="Agregar Pelicula">
+                    <div id="error-text-login"></div>
+                   
                 </div>
             </form>
         </section>
@@ -75,9 +85,10 @@
         <section class="container mt-5 mb-5 overflow-auto">
             <h2>Listado de Peliculas</h2>
             <p class="small">Para ver todos los datos de las peliculas, elija una y toque modificar</p>
-            <table class="table table-dark table-striped ">
+            <table id="tablaPeliculas" class="table table-dark table-striped">
                 <thead>
                     <tr>
+                        <th>Id</th>
                         <th>Titulo</th>
                         <th>Genero</th>
                         <th>Imagen</th>
@@ -86,16 +97,7 @@
                 </thead>
                 <tbody>
                     <!--este es solo un ejemplo porque se va a llenar desde js-->
-                    <tr>
-                        <td>The Super Mario Bros. Movie (2023)</td>
-                        <td>Animation, Family, Adventure, Fantasy, Comedy</td>
-                        <td><img width="150px" src="../assets/img/mario.jpg" alt="mario pelicula 2023"></td>
-                        <td>
-                            <button class="btn btn-warning">Modificar</button>
-                           
-                            <button class="btn btn-danger">Eliminar</button>
-                        </td>
-                    </tr>
+                  
                 </tbody>
             </table>
         </section>
@@ -107,7 +109,7 @@
                 <li class="listaItem"><a class="linkNav" href="">Términos y condiciones</a></li>
                 <li class="listaItem"><a class="linkNav" href="">Preguntas frecuentes</a></li>
                 <li class="listaItem"><a class="linkNav" href="">Ayuda</a></li>
-                <li class="listaItem"><a class="linkNav administradorPeliculas" href="">Administrador Peliculas</a></li>
+                <li class="listaItem"><a id="administrador" class="linkNav administradorPeliculas" href="">Administrador Peliculas</a></li>
             </ul>
         </nav>
         <a href="#main" class="flechaArriba">
@@ -119,5 +121,14 @@
     AOS.init();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        // si en el localstore tiene guardado es_admin = 'S' entonces se muestra el link de administrador
+        if (localStorage.getItem('es_admin') === 'S') {
+            document.getElementById('administrador').style.display = 'block';
+        }else{
+            document.getElementById('administrador').style.display = 'none';
+        }
+   </script>
+   <script src="../js/agregar_pelicula.js"></script>
 </body>
 </html>

@@ -27,27 +27,24 @@
     <main id="mainDetalle" class="mainDetalle">
       <section class="detalle"  data-aos="zoom-in" >
         <div class="contenedorDetalle" >
-            <div class="imgDetalle">
-                <img src="../assets/img/mario.jpg" alt="mario pelicula 2023">
+            <div class="" id="imagenPelicula">
+                <img src="" alt="">
             </div>
-            <div class="textoDetalle">
-                <h1>The Super Mario Bros. Movie (2023)</h1>
-                <p>04/05/2023 • Animation, Family, Adventure, Fantasy, Comedy • 1h 33m</p>
-                <h2>Overview</h2>
-                <p>While working underground to fix a water main, Brooklyn plumbers—and brothers—Mario and Luigi are transported down a mysterious pipe and wander into a magical new world. But when the brothers are separated, Mario embarks on an epic quest to find Luigi.</p>
+            <div class="textoDetalle" id="textoDetalle">
+                <h1 id="titulo">No se encontro la Pelicula</h1>
+                <p id="fechaLanzamiento"></p>
+                <h2>Sinopsis</h2>
+                <p id="sinopsis"></p>
                 <div class="contenedorCreditos">
                     <div>
-                        <h3>Aaron Horvath</h3>
-                        <p>Director</p>
+                        <h3 id="director"></h3>
+                        <p></p>
                     </div>
                     <div>
-                        <h3>Michael Jelenic</h3>
-                        <p>Director</p>
+                        <h3 id="reparto"></h3>
+                        <p></p>
                     </div>
-                    <div>
-                        <h3>Matthew Fogel</h3>
-                        <p>Writer</p>
-                    </div>
+                    
                 </div>
                
             </div>
@@ -56,51 +53,7 @@
 
       </section>
 
-      <section class="trailer"  data-aos="fade-up" data-aos-offset="400" data-aos-delay="50" data-aos-duration="1000"  >
-        <div class="contenedorTrailer">
-            <h2>Ver trailer</h2>
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/RjNcTBXTk4I?si=7fnK8NtlxetW0d1R" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> 
-        </div>
-        <div class="contenedorInfo">
-            <div class="redes">
-                <ul>
-                    <li><a href="https://www.facebook.com/supermariomovie" target="_blank"><i class="fab fa-facebook"></i></a></li>
-                    <li><a href="https://twitter.com/supermariomovie" target="_blank"><i class="fab fa-twitter"></i></a></li>
-                    <li><a href="https://instagram.com/supermariomovie/"><i class="fab fa-instagram" target="_blank"></i></a></li>
-                    <li><a href="https://www.thesupermariobros.movie/"><i class="fas fa-link" target="_blank"></i></a></li>
-                </ul>
-            </div>
-            <div class="info">
-                <table>
-                    <thead>
-                        <tr>
-                            <th colspan="2">Info</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Status</strong></td>
-                            <td>Released</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Original Language</strong></td>
-                            <td>English</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Budget</strong></td>
-                            <td> $100.000.000,00</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Revenue</strong></td>
-                            <td> $1.347.013.866,00</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-
-      </section>
+     
 
     </main>
     <footer class="footer">
@@ -109,7 +62,7 @@
                 <li class="listaItem"><a class="linkNav" href="">Términos y condiciones</a></li>
                 <li class="listaItem"><a class="linkNav" href="">Preguntas frecuentes</a></li>
                 <li class="listaItem"><a class="linkNav" href="">Ayuda</a></li>
-                <li class="listaItem"><a class="linkNav administradorPeliculas" href="">Administrador Peliculas</a></li>
+                <li class="listaItem"><a id="administrador" class="linkNav administradorPeliculas" href="">Administrador Peliculas</a></li>
             </ul>
         </nav>
         <a href="#main" class="flechaArriba">
@@ -119,6 +72,42 @@
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
     AOS.init();
+    </script>
+    <script>
+        // si en el localstore tiene guardado es_admin = 'S' entonces se muestra el link de administrador
+        if (localStorage.getItem('es_admin') === 'S') {
+            document.getElementById('administrador').style.display = 'block';
+        }else{
+            document.getElementById('administrador').style.display = 'none';
+        }
+        // si esta pagina se cargo con un parametro buscar, entonces le tengo que pegar al api de peliculas para traer los datos de esta pelicula
+        const urlParams = new URLSearchParams(window.location.search);
+        console.log(urlParams);
+        const buscar = urlParams.get('buscar');
+        console.log(buscar);
+        if (buscar) {
+            fetch(`http://localhost/moviesphp/peliculas?buscar=${buscar}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // si la pelicula no existe, entonces redirijo al index
+                if (data=== 0) {
+                    setTimeout(() => {
+                        window.location.href = '../index.html';
+                    }, 3000);
+                  
+                }
+                // si la pelicula existe, entonces muestro los datos
+                document.getElementById('imagenPelicula').innerHTML = `<img src="../assets/img/${data[0].imagen}" alt="${data[0].titulo}" width="300px">`;
+                document.getElementById('titulo').innerText = data[0].titulo;
+                document.getElementById('fechaLanzamiento').innerText = `${data[0].fecha_lanzamiento} • ${data[0].genero} • ${data[0].duracion}`;
+                
+                document.getElementById('director').innerText = `${data[0].director}`;
+                document.getElementById('reparto').innerText = `${data[0].reparto}`;
+                document.getElementById('sinopsis').innerText = `${data[0].sinopsis}`;
+
+            });
+        }
     </script>
 </body>
 </html>
